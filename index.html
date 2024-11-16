@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>反应时间测试</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            touch-action: manipulation; /* Prevents double-tap to zoom */
+        }
+        h1 {
+            font-size: 3em;
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <h1 id="countdown">按任意键或轻触屏幕开始</h1>
+        <p id="message"></p>
+    </div>
+    <script>
+        let countdownElement = document.getElementById('countdown');
+        let messageElement = document.getElementById('message');
+        let countdownInterval;
+        let startTime;
+        let countdownStarted = false;
+        let scale = 0.5;
+
+        function handleEvent() {
+            if (!countdownStarted) {
+                countdownStarted = true;
+                startCountdown();
+            } else {
+                stopCountdown();
+            }
+        }
+
+        function startCountdown() {
+            let countdownValue = 3;
+            countdownElement.textContent = countdownValue;
+            startTime = Date.now();
+
+            countdownInterval = setInterval(() => {
+                countdownValue--;
+                countdownElement.textContent = countdownValue;
+
+                if (countdownValue < 0) {
+                    clearInterval(countdownInterval);
+                    countdownElement.textContent = 0;
+                    countdownStarted = false;
+                    let elapsedTime = Date.now() - startTime;
+                    let expectedTime = 3000 * scale; // 3 seconds
+                    let difference = elapsedTime - expectedTime;
+                    messageElement.textContent = `时间到了！你的反应时间差：${difference} 毫秒。按任意键或轻触屏幕重新开始。`;
+                }
+            }, 1000 * scale);
+        }
+
+        function stopCountdown() {
+            if (countdownStarted) {
+                clearInterval(countdownInterval);
+                let elapsedTime = Date.now() - startTime;
+                let expectedTime = 3000 * scale; // 3 seconds
+                let difference = elapsedTime - expectedTime;
+                countdownElement.textContent = '停止!';
+                messageElement.textContent = `你的反应时间差：${difference} 毫秒。按任意键或轻触屏幕重新开始。`;
+                countdownStarted = false;
+            }
+        }
+
+        document.addEventListener('keydown', handleEvent);
+        document.addEventListener('touchstart', handleEvent);
+    </script>
+</body>
+</html>
